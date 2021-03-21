@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<test name="test_deals">
+    <parameter_sets>
+        <parameter_set name="mincov=8">
+            <param name="min_rule_covered">8.0</param>
+            <param name="max_growing">0.0</param>
+            <param name="enable_pruning">true</param>
+            <param name="ignore_missing">false</param>
+        </parameter_set>
+
+        <parameter_set name="mincov=8, no_pruning">
+            <param name="min_rule_covered">8.0</param>
+            <param name="max_growing">0.0</param>
+            <param name="enable_pruning">false</param>
+            <param name="ignore_missing">false</param>
+        </parameter_set>
+
+    </parameter_sets>
+
+    <datasets>
+        <dataset>
+            <label>Future Customer</label>
+            <training>
+                <train>
+                    <in_file>data/deals-train.arff</in_file>
+                </train>
+            </training>
+        </dataset>
+    </datasets>
+</test>

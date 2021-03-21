@@ -1,0 +1,166 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    repositories {
+        jcenter()
+        maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.4'
+    }
+}
+
+
+plugins { id 'com.rapidminer.extension' version '0.9.3' }
+
+
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+
+
+codeQuality {
+    checkstyle = false
+    headerCheck = false
+    findbugs = false
+}
+
+sourceCompatibility = 1.8
+
+version = '1.3.6'
+
+
+
+jar {
+	baseName = 'rulekit'
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': 'adaa.analytics.rules.consoles.ExperimentalConsole'
+    }
+}
+
+repositories {
+    jcenter()
+    maven { url 'https://maven.rapidminer.com/content/groups/public/' }
+    maven { url "https://nexus.bedatadriven.com/content/groups/public" }
+    flatDir { dirs 'lib'}
+}
+
+
+extensionConfig {
+    name 'ADAA Rules'
+    groupId = 'adaa.analytics.rules'
+    vendor = 'Silesian University of Technology'
+    homepage = 'https://github.com/adaa-polsl'
+
+    dependencies {
+        rapidminer '9.3.1'
+    }
+}
+
+sourceSets {
+    test{
+        java {
+            srcDir 'test'
+        }
+    }
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
+
+dependencies {
+    compile 'commons-cli:commons-cli:1.4'
+    compile group: 'com.rapidminer.studio', name: 'rapidminer-studio-core', version: '9.3.1'
+    compile group: 'com.miglayout', name: 'miglayout-swing', version: '5.1'
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    compile group: 'net.openhft', name: 'compiler', version: '2.3.1'
+    compile files(org.gradle.internal.jvm.Jvm.current().toolsJar)
+    compile group: 'org.jetbrains', name: 'annotations', version: '13.0'
+    compile group: 'org.renjin', name: 'renjin-script-engine', version:'0.9.2646'
+    compile group: 'org.renjin', name: 'renjin-core', version:'0.9.2691'
+    compile group: 'org.renjin', name: 'tools', version: '0.9.2691'
+    compile fileTree(include: ['*.jar'], dir: 'lib')
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+
+}
+
+shadowJar {
+    zip64 true
+}
+
+
+task rmbundle(type: Zip) {
+	baseName = 'rulekit'
+	classifier = 'rmbundle'
+    from (configurations.runtime.allArtifacts.files){
+    into ('lib/plugins/')
+    }
+    from (configurations.runtime) {
+    into ('lib/')
+    }
+    from('bundle'){
+    into ('/')
+    }
+}
+
+task rjar(type: Jar) {
+	baseName = 'rulekit'
+    classifier = 'all'
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': 'adaa.analytics.rules.consoles.ExperimentalConsole'
+    }
+    
+    from { 
+      configurations.compile.filter( {! (it.name =~ /.*\.pom/ )}).collect { it.isDirectory() ? it : zipTree(it) }       
+    }{    
+      exclude ('**/*.SF')      
+      exclude ('**/*.DSA')
+      exclude ('**/*.RSA')
+    }
+    
+    with jar
+    zip64 true
+}
+
+task acrules(type: Jar) {
+    baseName = 'ac-rules'
+    classifier = 'all'
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': 'main.ActionRulesConsole'
+    }
+
+    from {
+        configurations.compile.filter( {! (it.name =~ /.*\.pom/ )}).collect { it.isDirectory() ? it : zipTree(it) }
+    }{
+        exclude ('**/*.SF')
+        exclude ('**/*.DSA')
+        exclude ('**/*.RSA')
+    }
+
+    with jar
+    zip64 true
+}
+
+task generateVersionProperties {
+    doLast {
+        def propertiesFile = file "$buildDir/resources/main/version.properties"
+        propertiesFile.parentFile.mkdirs()
+        def properties = new Properties()
+        properties.setProperty("version", rootProject.version.toString())
+        properties.setProperty("date", new SimpleDateFormat("dd.MM.yyyy").format(new java.util.Date()))
+        properties.setProperty("commitHash", ['git', 'rev-parse', 'HEAD'].execute().text.trim())
+        properties.setProperty("commitDate", ['git', 'log', '-1', '--format=%ct', '--date=local'].execute().text.trim())
+        propertiesFile.withWriter { properties.store(it, null) }
+    }
+}
+processResources.dependsOn generateVersionProperties
+
+classes {
+    dependsOn generateVersionProperties
+}
