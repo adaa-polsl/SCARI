@@ -1,8 +1,10 @@
-#Sequential Covering Action Rule Induction
+# Sequential Covering Action Rule Induction
+
 This repository is a fork of [RuleKit](https://github.com/adaa-polsl/RuleKit) - comprehensive package with Rule-based models generation capabilities.
 This repository extends RuleKit with Action Rules induction algorithms. 
 
-#Getting started
+## Getting started
+
 For details on running the RuleKit please refer to the RuleKit repository. This package was extended with ActionRulesConsole class, which allows to easily run the algorithms of Action Rule induction by specyfing only few parameters. This is sufficient to get familiar with the method and analyze results achieved on custom datasets. Whether one would like to include the method in other software, the ActionRulesConsole class showcases how the code should be used to integrate it.
 
 If one whishes not to use provided utility script, please keep in mind, that the project is buildable and runnable only with JDK8.
@@ -37,3 +39,5 @@ As a result, the binary will generate few files:
 * Recommendations generated for source examples in test dataset
 * Set of source examples from test dataset, that were modified according to action rules generated on train dataset
 * Set of source examples from test dataset, that were modified using the recommendation engine
+
+Feel free to inspect the code of the scripts and library provided in this repository to get to know how to use the code for more advanced scenarios. It contains some unit tests which might be helpful in understanding how the code is structured.
