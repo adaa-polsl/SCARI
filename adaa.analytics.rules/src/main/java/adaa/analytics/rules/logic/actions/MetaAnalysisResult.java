@@ -73,7 +73,7 @@ public class MetaAnalysisResult {
             .forEach(x -> rule.getPremise().addSubcondition(x));
 
 
-        Attribute classAtr = sourceExamples.getAttributes().get("class");
+        Attribute classAtr = sourceExamples.getAttributes().getLabel();
 
         IValueSet sourceClass = new SingletonSet((double)from, classAtr.getMapping().getValues());
         if (from == -1.0) {
