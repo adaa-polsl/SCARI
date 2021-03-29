@@ -9,7 +9,8 @@ For details on running the RuleKit please refer to the RuleKit repository. This 
 
 If one whishes not to use provided utility script, please keep in mind, that the project is buildable and runnable only with JDK8.
 
-#Running ActionRulesConsole
+#Parameters of ActionRulesConsole
+
 There are few parameters to be specified, when running the code:
 * '--train <filename>' - relative path to train dataset, in ARFF format. Mandatory parameter.
 * '--test <filename>' - relative path to test dataset, in ARFF format. Optional. If not provided, train file will be used for test.
@@ -20,7 +21,10 @@ There are few parameters to be specified, when running the code:
 * '--label <value>' - name of the label attribute in the dataset. If not provided, the name "class" will be assumed.
 * '--backward' - if this switch is specified, the algorithm will run in Backward more, while without this specification in runs in Forward mode. 
 
-There are utility scripts included in the repository to make running the code easier. The binary is hosted here, on github in the Releases section, and the repository contains Dockerfile that allows to download the binary and embed it into container capable of running it, which means it can be run on any platform that supports running Docker.
+
+#Running ActionRulesConsole with Docker (no need for local Java installation)
+
+There are utility scripts included in the repository to make running the code easier. The binary is hosted here, on github in the Releases section, and the repository contains Dockerfile that allows to download the binary and embed it into container capable of running it, which means it can be run on any platform that supports running Docker. That way, the end-user doesn't need to bother with installation of Java version capable of running the binary.
 
 To build the docker image, navigate to 'adaa.analytics.rules' directory and run 'build_image' script, depending on your platform or setup, this will be either 'build_image.sh' or 'build_image.ps1' file. It requires Docker installation to be present in your system. The invocation of that script will build actionrules:latest docker image.
 
@@ -33,6 +37,24 @@ For example, the minimum command line needed to be run to achieve some results (
 ```
 
 After building the image ones, subsequent calls don't require to build it again.
+
+#Running and building ActionRulesConsole locally
+
+Another way to use ActionRulesConsole is to build the binary locally, after checking out the content of this repository. This way requires JDK8 to be installed and configured locally to build java binaries, as well as gradle installation, since gradle system is used to orchestrate the compilation of the binary.
+
+To build and run the code, one could issue following commands, starting from the root directory of this repository:
+
+```
+cd adaa.analytics.rules
+gradlew -b build.gradle acrules
+java -jar build/lib/ac-rules-1.3.6-all.jar --train deals-train --source no --label "Future Customer"
+``` 
+
+Here, again, the datafile is located in the 'adaa.analytics.rules' directory for easiness of accessing it via command line.
+
+The example above shows also how to approach datasets, in which label attribute is named differently then "class". We can use optional `--label` parameter and provide the custom name. If the name contains whitespaces, don't forget to enclose them with quote marks. 
+
+#Output files
 
 As a result, the binary will generate few files:
 * Action rules generated on train dataset
